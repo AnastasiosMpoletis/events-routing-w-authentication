@@ -3,9 +3,9 @@ import {
   useNavigate,
   useNavigation,
   useActionData,
-  json,
   redirect
 } from 'react-router-dom';
+import { getAuthToken } from '../util/auth.js';
 
 import classes from './EventForm.module.css';
 
@@ -105,6 +105,7 @@ export async function action({ request, params }) {
     method: method,
     headers: {
       'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + getAuthToken(),
     },
     body: JSON.stringify(eventData),
   });
@@ -114,7 +115,9 @@ export async function action({ request, params }) {
   }
 
   if (!response.ok) {
-    throw json({ message: 'Could not save event.' }, { status: 500 });
+    throw new Response(JSON.stringify({ message: 'Could not save event.' }), {
+      status: 500,
+    });
   }
 
   return redirect('/events');
